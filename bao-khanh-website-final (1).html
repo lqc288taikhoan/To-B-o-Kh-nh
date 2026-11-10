@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Album Bảo Khánh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600&family=Be+Vietnam+Pro:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#FBF9FD;--surface:#FFFFFF;--ink:#3A3550;--muted:#76708C;--lav:#DDD6F3;--blush:#F8DDE3;--sky:#D6E8F3;--butter:#F9EBC8;--accent:#7468B8;--accent-ink:#FFFFFF;--line:#E7E2F1;color-scheme:light;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#18162A;--surface:#221F38;--ink:#ECE9F7;--muted:#A9A3C4;--lav:#3A3566;--blush:#4A3140;--sky:#28405A;--butter:#4A4230;--accent:#A99EF0;--accent-ink:#1D1A33;--line:#36314F;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#18162A;--surface:#221F38;--ink:#ECE9F7;--muted:#A9A3C4;--lav:#3A3566;--blush:#4A3140;--sky:#28405A;--butter:#4A4230;--accent:#A99EF0;--accent-ink:#1D1A33;--line:#36314F;color-scheme:dark}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:calc(env(safe-area-inset-top,0px) + 72px);scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 1rem/1.65 "Be Vietnam Pro",system-ui,-apple-system,"Segoe UI",sans-serif}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:10}
+.wrap{max-width:1000px;margin:0 auto;padding:0 20px}
+h1,h2,h3,.serif{font-family:Lora,Georgia,"Times New Roman",serif;font-weight:600;margin:0}
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:11;background:var(--bg);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;align-items:center;gap:16px;height:60px}
+.logo{font:600 1.15rem Lora,serif;white-space:nowrap}
+.links{display:flex;gap:4px;overflow-x:auto;flex:1;scrollbar-width:none}
+.links::-webkit-scrollbar{display:none}
+.links a{color:var(--muted);text-decoration:none;padding:8px 12px;border-radius:999px;white-space:nowrap;font-size:.9375rem}
+.links a:hover{background:var(--lav);color:var(--ink)}
+button{font:inherit;cursor:pointer}
+a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:999px;padding:10px 20px;font-weight:600;text-decoration:none;display:inline-block;white-space:nowrap}
+.btn.soft{background:var(--lav);color:var(--ink)}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--line)}
+section{padding:56px 0 8px}
+.hero{display:grid;gap:36px;align-items:center;padding-top:40px}
+@media (min-width:800px){.hero{grid-template-columns:1.1fr .9fr}}
+.pill{display:inline-block;background:var(--butter);border-radius:999px;padding:6px 16px;font-weight:600;font-size:.9375rem}
+.hero h1{font-size:clamp(2.2rem,7vw,3.6rem);line-height:1.15;margin:18px 0 14px}
+.hero p{color:var(--muted);max-width:46ch;margin:0 0 24px}
+.cta{display:flex;gap:12px;flex-wrap:wrap}
+.art{position:relative;width:min(84vw,380px);aspect-ratio:1;justify-self:center}
+.art i{position:absolute;border-radius:50%}
+.art .a{inset:0;background:var(--lav)}
+.art .b{width:46%;aspect-ratio:1;left:-6%;bottom:2%;background:var(--blush)}
+.art .c{width:30%;aspect-ratio:1;right:-2%;top:4%;background:var(--sky)}
+.art .photo{inset:13%;background:var(--surface) center/cover no-repeat;display:flex;align-items:center;justify-content:center;font:600 1.6rem Lora,serif;text-align:center;box-shadow:0 8px 28px rgba(80,70,130,.16)}
+.tag{position:absolute;right:0;bottom:6%;background:var(--surface);border-radius:14px;padding:10px 14px;font-size:.875rem;box-shadow:0 6px 20px rgba(80,70,130,.14)}
+.tag b{display:block;font-family:Lora,serif}
+h2{font-size:clamp(1.6rem,4.5vw,2.1rem);margin-bottom:8px}
+.sub{color:var(--muted);margin:0 0 24px}
+.filter{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;display:grid;gap:12px;grid-template-columns:repeat(2,1fr);margin-bottom:28px}
+@media (min-width:800px){.filter{grid-template-columns:repeat(5,1fr);align-items:end}}
+label{display:grid;gap:4px;font-size:.8125rem;color:var(--muted);font-weight:500}
+select,input,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:9px 10px;width:100%}
+figure{margin:0}
+.tile{position:relative;display:block;width:100%;aspect-ratio:1;border:0;padding:0;border-radius:16px;overflow:hidden;background:var(--sky);color:inherit}
+.tile img,.tile video{width:100%;height:100%;object-fit:cover;display:block}
+.tile .play{position:absolute;right:10px;bottom:10px;background:rgba(58,53,80,.8);color:#fff;border-radius:999px;padding:2px 10px;font-size:.8125rem}
+.born{background:var(--blush);display:flex;align-items:center;justify-content:center;font:600 1.7rem/1.2 Lora,serif;text-align:center;padding:12px;cursor:default}
+figcaption{padding:10px 2px 0}
+figcaption b{display:block;font-weight:600}
+figcaption span{color:var(--muted);font-size:.875rem}
+.tl{position:relative;display:grid;gap:28px;padding-left:28px}
+.tl::before{content:"";position:absolute;left:6px;top:6px;bottom:6px;width:2px;background:var(--lav)}
+.ti{position:relative;max-width:340px}
+.ti::before{content:"";position:absolute;left:-28px;top:8px;width:14px;height:14px;border-radius:50%;background:var(--accent);border:3px solid var(--bg)}
+.gl{display:grid;grid-template-columns:repeat(2,1fr);gap:22px 14px}
+@media (min-width:700px){.gl{grid-template-columns:repeat(3,1fr);gap:28px 20px}}
+.empty{grid-column:1/-1;background:var(--surface);border:1.5px dashed var(--line);border-radius:16px;padding:20px;color:var(--muted)}
+.letters{display:grid;gap:16px;grid-template-columns:1fr;margin-top:24px}
+@media (min-width:700px){.letters{grid-template-columns:repeat(2,1fr)}}
+.letter{border-radius:18px;padding:20px;display:grid;gap:10px;align-content:start}
+.letter p{margin:0;white-space:pre-wrap}
+.letter small{color:var(--muted)}
+.c0{background:var(--lav)}.c1{background:var(--blush)}.c2{background:var(--sky)}.c3{background:var(--butter)}
+.write{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;display:grid;gap:12px}
+footer{margin-top:64px;border-top:1px solid var(--line);padding:28px 0 36px;text-align:center;color:var(--muted)}
+footer b{display:block;font:600 1.2rem Lora,serif;color:var(--ink);margin-bottom:4px}
+dialog{border:0;border-radius:20px;padding:0;background:var(--surface);color:var(--ink);width:min(92vw,560px);max-height:90vh}
+dialog::backdrop{background:rgba(24,22,42,.55)}
+.d{padding:20px;display:grid;gap:14px}
+.d img,.d video{width:100%;max-height:60vh;object-fit:contain;border-radius:12px;background:var(--sky)}
+.row{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}
+.msg{margin:0;color:var(--muted);font-size:.9375rem;min-height:1.4em}
+</style>
+</head>
+<body>
+<nav><div class="wrap">
+  <div class="logo">Bảo Khánh</div>
+  <div class="links">
+    <a href="#home">Trang chủ</a><a href="#timeline">Hành trình lớn khôn</a><a href="#gallery">Ảnh & video</a><a href="#letters">Lời thương gửi em</a>
+  </div>
+  <button class="btn" id="addBtn" hidden>+ Thêm kỷ niệm</button>
+</div></nav>
+
+<div class="wrap">
+  <section class="hero" id="home">
+    <div>
+      <span class="pill" id="age"></span>
+      <h1>Bảo Khánh yêu quý, lớn lên từng ngày</h1>
+      <p>Bảo Khánh yêu quý, đây là cuốn nhật ký nhỏ mà bố mẹ và những người thương con cùng nhau viết nên. Từng tấm ảnh, thước phim và lời nhắn đều cất giữ một chút yêu thương, để mai này khi em bé ngày nào đã lớn khôn, cả nhà mình lại cùng mở ra và nhớ về những ngày đầu đời thật đẹp nhé.</p>
+      <div class="cta"><a class="btn" href="#timeline">Nhìn lại hành trình</a><a class="btn soft" href="#letters">Viết vài lời cho Khánh</a></div>
+    </div>
+    <div class="art" aria-label="Ảnh mới nhất của Bảo Khánh">
+      <i class="a"></i><i class="b"></i><i class="c"></i>
+      <i class="photo" id="photo">Khánh</i>
+      <div class="tag"><b>Ngày 09/11/2025</b>Ngày bố mẹ được gặp em bé</div>
+    </div>
+  </section>
+
+  <section id="timeline">
+    <h2>Hành trình lớn khôn của Bảo Khánh</h2>
+    <p class="sub">Từ ngày đầu tiên Bảo Khánh đến bên bố mẹ, đến từng điều nhỏ xíu mà đáng yêu. Mỗi dấu mốc đều là một kỷ niệm mà cả nhà muốn giữ thật lâu.</p>
+    <div class="filter" id="filter">
+      <label>Loại<select id="fType"><option value="">Tất cả</option><option value="image">Ảnh</option><option value="video">Video</option></select></label>
+      <label>Tháng<select id="fMonth"><option value="">Tất cả</option></select></label>
+      <label>Từ ngày<input type="date" id="fFrom"></label>
+      <label>Đến ngày<input type="date" id="fTo"></label>
+      <button class="btn ghost" id="fReset" type="button">Xóa bộ lọc</button>
+    </div>
+    <div class="tl" id="tl"></div>
+  </section>
+
+  <section id="gallery">
+    <h2>Những khoảnh khắc tuổi thơ</h2>
+    <p class="sub">Mỗi bức ảnh, mỗi đoạn phim đều giữ lại một chút tuổi thơ của em bé. Bố mẹ muốn cất giữ thật lâu, để sau này Bảo Khánh và cả nhà mình cùng xem lại nhé.</p>
+    <div class="gl" id="gl"></div>
+  </section>
+
+  <section id="letters">
+    <h2>Những lời thương gửi Bảo Khánh</h2>
+    <p class="sub">Có những điều bố mẹ muốn thủ thỉ với Bảo Khánh hôm nay, và cũng có những lời thương muốn dành lại để con đọc khi lớn. Góc nhỏ này sẽ lưu giữ tất cả những lời nhắn ấy.</p>
+    <div class="write" id="write" hidden>
+      <label>Tên người viết<input id="lName" maxlength="40" placeholder="Ví dụ: Bố, mẹ, ông bà..."></label>
+      <label>Lời nhắn<textarea id="lText" rows="3" maxlength="600" placeholder="Bảo Khánh yêu quý, hôm nay..."></textarea></label>
+      <p class="msg" id="lMsg" role="status"></p>
+      <div class="row"><button class="btn" id="lSend" type="button">Gửi thư</button></div>
+    </div>
+    <p class="msg" id="lNote" hidden>Người thân được cấp quyền đóng góp trên trang này mới viết được thư.</p>
+    <div class="letters" id="ls"></div>
+  </section>
+  <footer><b>Bố mẹ thương Bảo Khánh thật nhiều ♡</b>Cả nhà sẽ luôn ở đây, bên cạnh em bé trên từng chặng đường lớn khôn.</footer>
+</div>
+
+<dialog id="view"><div class="d">
+  <div id="viewMedia"></div><div id="viewCap"></div>
+  <div class="row"><button class="btn ghost" id="delBtn" hidden>Xóa kỷ niệm</button><button class="btn" id="closeView">Đóng</button></div>
+</div></dialog>
+
+<dialog id="add"><div class="d">
+  <label>Ảnh hoặc video<input type="file" id="file" accept="image/*,video/*"></label>
+  <label>Ngày<input type="date" id="date"></label>
+  <label>Mô tả<textarea id="cap" rows="2" maxlength="200" placeholder="Hôm nay Bảo Khánh..."></textarea></label>
+  <p class="msg" id="addMsg" role="status"></p>
+  <div class="row"><button class="btn ghost" id="cancelAdd">Hủy</button><button class="btn" id="saveAdd">Lưu kỷ niệm</button></div>
+</div></dialog>
+
+<script>
+(function(){
+  var $=function(id){return document.getElementById(id)};
+  var items=[],letters=[],db=null,assets=null,canEdit=false,current=null,armed=false;
+
+  function ageText(){
+    var n=new Date(),m=(n.getFullYear()-2025)*12+n.getMonth()-10;
+    if(n.getDate()<9)m--;
+    if(m<1)return "Vừa chào đời";
+    return m<24?m+" tháng tuổi":Math.floor(m/12)+" tuổi";
+  }
+  function fmt(d){var p=(d||"").split("-");return p.length===3?p[2]+"/"+p[1]+"/"+p[0]:""}
+  function src(it){return "/_blob/"+it.assetId}
+  function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e}
+
+  function passes(it){
+    var t=$("fType").value,m=$("fMonth").value,a=$("fFrom").value,b=$("fTo").value,d=it.date||"";
+    if(t&&it.kind!==t)return false;
+    if(m&&d.slice(0,7)!==m)return false;
+    if(a&&d<a)return false;
+    if(b&&d>b)return false;
+    return true;
+  }
+  function card(it){
+    var f=el("figure"),b=el("button","tile");b.type="button";
+    b.setAttribute("aria-label","Xem: "+(it.caption||"kỷ niệm"));
+    var m;
+    if(it.kind==="video"){m=el("video");m.src=src(it)+"#t=0.1";m.preload="metadata";m.muted=true;m.playsInline=true;b.appendChild(m);b.appendChild(el("span","play","Video"));}
+    else{m=el("img");m.src=src(it);m.alt=it.caption||"";m.loading="lazy";b.appendChild(m);}
+    b.onclick=function(){openView(it)};
+    var c=el("figcaption");c.appendChild(el("b",null,it.caption||"Kỷ niệm"));c.appendChild(el("span",null,fmt(it.date)));
+    f.appendChild(b);f.appendChild(c);return f;
+  }
+  function born(){
+    var f=el("figure"),t=el("div","tile born","Ngày mình gặp nhau"),c=el("figcaption");
+    c.appendChild(el("b",null,"Ngày Bảo Khánh đến bên bố mẹ"));c.appendChild(el("span",null,"09/11/2025"));
+    f.appendChild(t);f.appendChild(c);return f;
+  }
+  function renderMonths(){
+    var s=$("fMonth"),cur=s.value,ms={};
+    items.forEach(function(i){if(i.date)ms[i.date.slice(0,7)]=1});
+    s.textContent="";var o=el("option",null,"Tất cả");o.value="";s.appendChild(o);
+    Object.keys(ms).sort().reverse().forEach(function(k){var p=k.split("-"),x=el("option",null,"Tháng "+Number(p[1])+"/"+p[0]);x.value=k;s.appendChild(x)});
+    s.value=cur;
+  }
+  function render(){
+    var all=items.slice().sort(function(a,b){return (b.date||"").localeCompare(a.date||"")||(b.createdAt||0)-(a.createdAt||0)});
+    var latest=all.filter(function(i){return i.kind==="image"})[0];
+    var ph=$("photo");
+    if(latest){ph.style.backgroundImage='url("'+src(latest)+'")';ph.textContent="";}
+    var list=all.filter(passes),tl=$("tl"),gl=$("gl");
+    tl.textContent="";gl.textContent="";
+    if(!list.length){
+      var msg=all.length?"Không có kỷ niệm nào khớp bộ lọc. Bấm “Xóa bộ lọc” để xem tất cả.":(canEdit?"Chưa có khoảnh khắc nào ở đây. Mình thêm bức ảnh hoặc đoạn phim đầu tiên của em nhé.":"Góc nhỏ này đang chờ những bức ảnh và thước phim đầu tiên của em bé. Bố mẹ sẽ sớm cập nhật nhé.");
+      tl.appendChild(el("div","empty",msg));gl.appendChild(el("div","empty",msg));
+    }
+    list.forEach(function(it){var w=el("div","ti");w.appendChild(card(it));tl.appendChild(w);gl.appendChild(card(it))});
+    var bw=el("div","ti");bw.appendChild(born());tl.appendChild(bw);
+  }
+  function renderLetters(){
+    var box=$("ls");box.textContent="";
+    letters.slice().sort(function(a,b){return (b.createdAt||0)-(a.createdAt||0)}).forEach(function(l,i){
+      var c=el("div","letter c"+(i%4));
+      c.appendChild(el("p",null,l.text||""));
+      c.appendChild(el("small",null,"Từ "+(l.name||"người thân")));
+      if(canEdit){var d=el("button","btn ghost","Xóa thư"),on=false;d.type="button";
+        d.onclick=async function(){if(!on){on=true;d.textContent="Bấm lần nữa để xóa";return}
+          try{await db.collection("letters").doc(l.id).delete()}catch(e){d.textContent="Chưa xóa được"}};
+        c.appendChild(d);}
+      box.appendChild(c);
+    });
+  }
+
+  function openView(it){
+    current=it;armed=false;$("delBtn").textContent="Xóa kỷ niệm";
+    var box=$("viewMedia");box.textContent="";var m;
+    if(it.kind==="video"){m=el("video");m.controls=true;m.playsInline=true;m.src=src(it);}
+    else{m=el("img");m.src=src(it);m.alt=it.caption||"";}
+    box.appendChild(m);
+    $("viewCap").textContent=(it.caption||"Kỷ niệm")+(it.date?" – "+fmt(it.date):"");
+    $("delBtn").hidden=!canEdit;$("view").showModal();
+  }
+  $("closeView").onclick=function(){$("view").close()};
+  $("view").addEventListener("close",function(){$("viewMedia").textContent=""});
+  $("delBtn").onclick=async function(){
+    if(!armed){armed=true;this.textContent="Bấm lần nữa để xóa";return}
+    try{await db.collection("memories").doc(current.id).delete();$("view").close()}
+    catch(e){$("viewCap").textContent="Chưa xóa được. Bạn hãy thử lại."}
+  };
+
+  ["fType","fMonth","fFrom","fTo"].forEach(function(id){$(id).addEventListener("change",render)});
+  $("fReset").onclick=function(){["fType","fMonth","fFrom","fTo"].forEach(function(id){$(id).value=""});render()};
+
+  $("addBtn").onclick=function(){
+    $("file").value="";$("cap").value="";$("addMsg").textContent="";
+    var t=new Date();$("date").value=t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0");
+    $("add").showModal();
+  };
+  $("cancelAdd").onclick=function(){$("add").close()};
+  $("saveAdd").onclick=async function(){
+    var f=$("file").files[0],msg=$("addMsg");
+    if(!f){msg.textContent="Hãy chọn một ảnh hoặc video.";return}
+    var btn=this;btn.disabled=true;msg.textContent="Đang tải lên…";
+    try{
+      var r=await assets.upload(f);
+      await db.collection("memories").add({assetId:r.id,kind:f.type.indexOf("video")===0?"video":"image",caption:$("cap").value.trim(),date:$("date").value,createdAt:Date.now()});
+      $("add").close();
+    }catch(e){msg.textContent="Chưa lưu được. Bạn hãy kiểm tra dung lượng tệp (tối đa 20 MB) rồi thử lại."}
+    btn.disabled=false;
+  };
+  $("lSend").onclick=async function(){
+    var n=$("lName").value.trim(),t=$("lText").value.trim(),m=$("lMsg");
+    if(!t){m.textContent="Viết vài lời thương dành cho em nhé.";return}
+    this.disabled=true;m.textContent="Đang gửi…";
+    try{await db.collection("letters").add({name:n,text:t,createdAt:Date.now()});$("lText").value="";m.textContent="Lời nhắn đã được gửi đến Bảo Khánh ♡"}
+    catch(e){m.textContent="Chưa gửi được. Có thể bạn chưa có quyền đóng góp trên trang này."}
+    this.disabled=false;
+  };
+
+  $("age").textContent=ageText();
+  render();
+
+  (async function(){
+    try{
+      if(typeof claude==="undefined"||!claude.use)return;
+      var user=await claude.use("user");
+      canEdit=!!(user&&user.canEdit());
+      db=await claude.use("db");
+      assets=await claude.use("assets");
+      if(canEdit&&db&&assets)$("addBtn").hidden=false;
+      if(db){
+        var can=user&&user.can?user.can("data.write"):null;
+        if(can===false)$("lNote").hidden=false;else $("write").hidden=false;
+        db.collection("memories").onSnapshot(function(s){items=s.docs.map(function(d){var x=d.data()||{};x.id=d.id;return x});renderMonths();render()},function(){render()});
+        db.collection("letters").onSnapshot(function(s){letters=s.docs.map(function(d){var x=d.data()||{};x.id=d.id;return x});renderLetters()},function(){});
+      }else{$("lNote").hidden=false}
+      render();renderLetters();
+    }catch(e){}
+  })();
+})();
+</script>
+</body>
+</html>
