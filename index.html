@@ -145,6 +145,15 @@ dialog::backdrop{background:rgba(24,22,42,.55)}
   <div class="row"><button class="btn ghost" id="delBtn" hidden>Xóa kỷ niệm</button><button class="btn" id="closeView">Đóng</button></div>
 </div></dialog>
 
+
+<dialog id="login"><form class="d" id="loginForm">
+  <h2>Đăng nhập</h2>
+  <label>Email<input type="email" id="loginEmail" autocomplete="username" required placeholder="Email đã được cấp tài khoản"></label>
+  <label>Mật khẩu<input type="password" id="loginPassword" autocomplete="current-password" required placeholder="Mật khẩu"></label>
+  <p class="msg" id="loginMsg" role="status"></p>
+  <div class="row"><button class="btn ghost" id="cancelLogin" type="button">Đóng</button><button class="btn" id="submitLogin" type="submit">Đăng nhập</button></div>
+</form></dialog>
+
 <dialog id="add"><div class="d">
   <label>Ảnh hoặc video<input type="file" id="file" accept="image/*,video/*"></label>
   <label>Ngày<input type="date" id="date"></label>
@@ -153,10 +162,15 @@ dialog::backdrop{background:rgba(24,22,42,.55)}
   <div class="row"><button class="btn ghost" id="cancelAdd">Hủy</button><button class="btn" id="saveAdd">Lưu kỷ niệm</button></div>
 </div></dialog>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 (function(){
   var $=function(id){return document.getElementById(id)};
-  var items=[],letters=[],db=null,assets=null,canEdit=false,current=null,armed=false;
+  var SUPABASE_URL="https://kvmhwxnvzhfpdvmcwltc.supabase.co";
+  var SUPABASE_PUBLISHABLE_KEY="sb_publishable_Qi-GK2udPuKK50YLPh-aCw_wDIdH9dJ";
+  var supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);
+  var items=[],letters=[],canEdit=false,current=null,armed=false,session=null,profile=null;
+  var loginBtn=null;
 
   function ageText(){
     var n=new Date(),m=(n.getFullYear()-2025)*12+n.getMonth()-10;
@@ -165,9 +179,29 @@ dialog::backdrop{background:rgba(24,22,42,.55)}
     return m<24?m+" tháng tuổi":Math.floor(m/12)+" tuổi";
   }
   function fmt(d){var p=(d||"").split("-");return p.length===3?p[2]+"/"+p[1]+"/"+p[0]:""}
-  function src(it){return "/_blob/"+it.assetId}
   function el(tag,cls,txt){var e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e}
+  function escapePathName(name){return name.normalize("NFKD").replace(/[^\w.-]+/g,"-").replace(/-+/g,"-").slice(-100)||"media"}
 
+  async function signedMediaUrl(it){
+    if(!it.media_path)return "";
+    var response=await fetch(SUPABASE_URL+"/functions/v1/get-family-media",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "apikey":SUPABASE_PUBLISHABLE_KEY,
+        "Authorization":"Bearer "+SUPABASE_PUBLISHABLE_KEY
+      },
+      body:JSON.stringify({memoryId:it.id})
+    });
+    if(!response.ok) throw new Error("Không lấy được đường dẫn ảnh");
+    var result=await response.json();
+    return result.signedUrl||"";
+  }
+  async function hydrateMedia(){
+    await Promise.all(items.map(async function(it){
+      try{it.signedUrl=await signedMediaUrl(it)}catch(e){it.signedUrl=""}
+    }));
+  }
   function passes(it){
     var t=$("fType").value,m=$("fMonth").value,a=$("fFrom").value,b=$("fTo").value,d=it.date||"";
     if(t&&it.kind!==t)return false;
@@ -180,8 +214,8 @@ dialog::backdrop{background:rgba(24,22,42,.55)}
     var f=el("figure"),b=el("button","tile");b.type="button";
     b.setAttribute("aria-label","Xem: "+(it.caption||"kỷ niệm"));
     var m;
-    if(it.kind==="video"){m=el("video");m.src=src(it)+"#t=0.1";m.preload="metadata";m.muted=true;m.playsInline=true;b.appendChild(m);b.appendChild(el("span","play","Video"));}
-    else{m=el("img");m.src=src(it);m.alt=it.caption||"";m.loading="lazy";b.appendChild(m);}
+    if(it.kind==="video"){m=el("video");m.src=(it.signedUrl||"")+"#t=0.1";m.preload="metadata";m.muted=true;m.playsInline=true;b.appendChild(m);b.appendChild(el("span","play","Video"));}
+    else{m=el("img");m.src=it.signedUrl||"";m.alt=it.caption||"";m.loading="lazy";b.appendChild(m);}
     b.onclick=function(){openView(it)};
     var c=el("figcaption");c.appendChild(el("b",null,it.caption||"Kỷ niệm"));c.appendChild(el("span",null,fmt(it.date)));
     f.appendChild(b);f.appendChild(c);return f;
@@ -200,9 +234,9 @@ dialog::backdrop{background:rgba(24,22,42,.55)}
   }
   function render(){
     var all=items.slice().sort(function(a,b){return (b.date||"").localeCompare(a.date||"")||(b.createdAt||0)-(a.createdAt||0)});
-    var latest=all.filter(function(i){return i.kind==="image"})[0];
+    var latest=all.filter(function(i){return i.kind==="image"&&i.signedUrl})[0];
     var ph=$("photo");
-    if(latest){ph.style.backgroundImage='url("'+src(latest)+'")';ph.textContent="";}
+    if(latest){ph.style.backgroundImage='url("'+latest.signedUrl.replace(/"/g,"%22")+'")';ph.textContent="";}
     var list=all.filter(passes),tl=$("tl"),gl=$("gl");
     tl.textContent="";gl.textContent="";
     if(!list.length){
@@ -220,17 +254,16 @@ dialog::backdrop{background:rgba(24,22,42,.55)}
       c.appendChild(el("small",null,"Từ "+(l.name||"người thân")));
       if(canEdit){var d=el("button","btn ghost","Xóa thư"),on=false;d.type="button";
         d.onclick=async function(){if(!on){on=true;d.textContent="Bấm lần nữa để xóa";return}
-          try{await db.collection("letters").doc(l.id).delete()}catch(e){d.textContent="Chưa xóa được"}};
+          try{var result=await supabaseClient.from("letters").delete().eq("id",l.id);if(result.error)throw result.error;await loadLetters()}catch(e){d.textContent="Chưa xóa được"}};
         c.appendChild(d);}
       box.appendChild(c);
     });
   }
-
   function openView(it){
     current=it;armed=false;$("delBtn").textContent="Xóa kỷ niệm";
     var box=$("viewMedia");box.textContent="";var m;
-    if(it.kind==="video"){m=el("video");m.controls=true;m.playsInline=true;m.src=src(it);}
-    else{m=el("img");m.src=src(it);m.alt=it.caption||"";}
+    if(it.kind==="video"){m=el("video");m.controls=true;m.playsInline=true;m.src=it.signedUrl||"";}
+    else{m=el("img");m.src=it.signedUrl||"";m.alt=it.caption||"";}
     box.appendChild(m);
     $("viewCap").textContent=(it.caption||"Kỷ niệm")+(it.date?" – "+fmt(it.date):"");
     $("delBtn").hidden=!canEdit;$("view").showModal();
@@ -239,59 +272,106 @@ dialog::backdrop{background:rgba(24,22,42,.55)}
   $("view").addEventListener("close",function(){$("viewMedia").textContent=""});
   $("delBtn").onclick=async function(){
     if(!armed){armed=true;this.textContent="Bấm lần nữa để xóa";return}
-    try{await db.collection("memories").doc(current.id).delete();$("view").close()}
-    catch(e){$("viewCap").textContent="Chưa xóa được. Bạn hãy thử lại."}
+    try{
+      var path=current.media_path;
+      var del=await supabaseClient.from("memories").delete().eq("id",current.id);
+      if(del.error)throw del.error;
+      if(path)await supabaseClient.storage.from("bao-khanh-media").remove([path]);
+      $("view").close();await loadMemories();
+    }catch(e){$("viewCap").textContent="Chưa xóa được. Bạn hãy thử lại."}
   };
-
   ["fType","fMonth","fFrom","fTo"].forEach(function(id){$(id).addEventListener("change",render)});
   $("fReset").onclick=function(){["fType","fMonth","fFrom","fTo"].forEach(function(id){$(id).value=""});render()};
-
+  $("addBtn").hidden=false;
+  $("addBtn").textContent="Đăng nhập";
   $("addBtn").onclick=function(){
-    $("file").value="";$("cap").value="";$("addMsg").textContent="";
-    var t=new Date();$("date").value=t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0");
-    $("add").showModal();
+    if(canEdit){$("file").value="";$("cap").value="";$("addMsg").textContent="";
+      var t=new Date();$("date").value=t.getFullYear()+"-"+String(t.getMonth()+1).padStart(2,"0")+"-"+String(t.getDate()).padStart(2,"0");$("add").showModal();}
+    else{$("loginMsg").textContent="";$("login").showModal();}
   };
+  $("cancelLogin").onclick=function(){$("login").close()};
+  $("loginForm").addEventListener("submit",async function(e){
+    e.preventDefault();var btn=$("submitLogin");btn.disabled=true;$("loginMsg").textContent="Đang đăng nhập…";
+    try{
+      var result=await supabaseClient.auth.signInWithPassword({email:$("loginEmail").value.trim(),password:$("loginPassword").value});
+      if(result.error)throw result.error;
+      $("login").close();$("loginPassword").value="";
+      await refreshAuth();
+    }catch(err){$("loginMsg").textContent="Không đăng nhập được. Hãy kiểm tra email và mật khẩu."}
+    btn.disabled=false;
+  });
   $("cancelAdd").onclick=function(){$("add").close()};
   $("saveAdd").onclick=async function(){
     var f=$("file").files[0],msg=$("addMsg");
     if(!f){msg.textContent="Hãy chọn một ảnh hoặc video.";return}
+    if(f.size>20*1024*1024){msg.textContent="Tệp vượt quá giới hạn 20 MB.";return}
     var btn=this;btn.disabled=true;msg.textContent="Đang tải lên…";
     try{
-      var r=await assets.upload(f);
-      await db.collection("memories").add({assetId:r.id,kind:f.type.indexOf("video")===0?"video":"image",caption:$("cap").value.trim(),date:$("date").value,createdAt:Date.now()});
-      $("add").close();
-    }catch(e){msg.textContent="Chưa lưu được. Bạn hãy kiểm tra dung lượng tệp (tối đa 20 MB) rồi thử lại."}
+      if(!session)throw new Error("Bạn cần đăng nhập");
+      var path=session.user.id+"/"+Date.now()+"-"+escapePathName(f.name);
+      var up=await supabaseClient.storage.from("bao-khanh-media").upload(path,f,{contentType:f.type,upsert:false});
+      if(up.error)throw up.error;
+      var kind=f.type.indexOf("video")===0?"video":"image";
+      var caption=$("cap").value.trim();
+      var ins=await supabaseClient.from("memories").insert({
+        title:caption||"Kỷ niệm",
+        description:caption,
+        event_date:$("date").value,
+        media_path:path,
+        media_type:kind,
+        created_by:session.user.id
+      });
+      if(ins.error){await supabaseClient.storage.from("bao-khanh-media").remove([path]);throw ins.error;}
+      $("add").close();await loadMemories();
+    }catch(e){msg.textContent="Chưa lưu được. Hãy kiểm tra quyền tài khoản và dung lượng tệp (tối đa 20 MB)."}
     btn.disabled=false;
   };
   $("lSend").onclick=async function(){
     var n=$("lName").value.trim(),t=$("lText").value.trim(),m=$("lMsg");
     if(!t){m.textContent="Viết vài lời thương dành cho em nhé.";return}
+    if(!session){m.textContent="Bạn cần đăng nhập để gửi thư.";return}
     this.disabled=true;m.textContent="Đang gửi…";
-    try{await db.collection("letters").add({name:n,text:t,createdAt:Date.now()});$("lText").value="";m.textContent="Lời nhắn đã được gửi đến Bảo Khánh ♡"}
-    catch(e){m.textContent="Chưa gửi được. Có thể bạn chưa có quyền đóng góp trên trang này."}
+    try{
+      var ins=await supabaseClient.from("letters").insert({author_name:n||profile?.display_name||"Người thân",message:t});
+      if(ins.error)throw ins.error;
+      $("lText").value="";m.textContent="Lời nhắn đã được gửi đến Bảo Khánh ♡";await loadLetters();
+    }catch(e){m.textContent="Chưa gửi được. Có thể tài khoản chưa được cấp quyền đóng góp."}
     this.disabled=false;
   };
-
+  async function loadMemories(){
+    var result=await supabaseClient.from("memories").select("id,title,description,event_date,media_path,media_type,created_at").order("event_date",{ascending:false});
+    if(result.error)throw result.error;
+    items=(result.data||[]).map(function(x){return {id:x.id,caption:x.description||x.title||"Kỷ niệm",date:x.event_date||"",kind:x.media_type||"image",media_path:x.media_path,createdAt:x.created_at?new Date(x.created_at).getTime():0,signedUrl:""}});
+    renderMonths();await hydrateMedia();render();
+  }
+  async function loadLetters(){
+    var result=await supabaseClient.from("letters").select("id,author_name,message,created_at").order("created_at",{ascending:false});
+    if(result.error)throw result.error;
+    letters=(result.data||[]).map(function(x){return {id:x.id,name:x.author_name,text:x.message,createdAt:x.created_at?new Date(x.created_at).getTime():0}});
+    renderLetters();
+  }
+  async function refreshAuth(){
+    var auth=await supabaseClient.auth.getSession();session=auth.data.session;
+    canEdit=false;profile=null;
+    if(session){
+      var pr=await supabaseClient.from("profiles").select("display_name,role").eq("id",session.user.id).maybeSingle();
+      if(!pr.error&&pr.data&&pr.data.role){profile=pr.data;canEdit=true;}
+    }
+    $("addBtn").textContent=canEdit?"+ Thêm kỷ niệm":"Đăng nhập";
+    $("write").hidden=!canEdit;
+    $("lNote").hidden=canEdit;
+    if(loginBtn)loginBtn.hidden=!canEdit;
+    await loadMemories();await loadLetters();
+  }
+  loginBtn=el("button","btn ghost","Đăng xuất");loginBtn.type="button";loginBtn.hidden=true;
+  loginBtn.onclick=async function(){await supabaseClient.auth.signOut();await refreshAuth()};
+  $("addBtn").parentNode.insertBefore(loginBtn,$("addBtn"));
   $("age").innerHTML='<span>Bảo Khánh · 13 tháng tuổi</span><span class="pill-divider" aria-hidden="true"></span><time class="pill-date" datetime="2025-11-09">09.11.2025</time>';
   render();
-
-  (async function(){
-    try{
-      if(typeof claude==="undefined"||!claude.use)return;
-      var user=await claude.use("user");
-      canEdit=!!(user&&user.canEdit());
-      db=await claude.use("db");
-      assets=await claude.use("assets");
-      if(canEdit&&db&&assets)$("addBtn").hidden=false;
-      if(db){
-        var can=user&&user.can?user.can("data.write"):null;
-        if(can===false)$("lNote").hidden=false;else $("write").hidden=false;
-        db.collection("memories").onSnapshot(function(s){items=s.docs.map(function(d){var x=d.data()||{};x.id=d.id;return x});renderMonths();render()},function(){render()});
-        db.collection("letters").onSnapshot(function(s){letters=s.docs.map(function(d){var x=d.data()||{};x.id=d.id;return x});renderLetters()},function(){});
-      }else{$("lNote").hidden=false}
-      render();renderLetters();
-    }catch(e){}
-  })();
+  refreshAuth().catch(function(){render();renderLetters()});
+  supabaseClient.auth.onAuthStateChange(function(){
+    setTimeout(function(){refreshAuth().catch(function(){});},0);
+  });
 })();
 </script>
 </body>
