@@ -376,13 +376,18 @@ dialog::backdrop{background:rgba(24,22,42,.55)}
   $("lSend").onclick=async function(){
     var n=$("lName").value.trim(),t=$("lText").value.trim(),m=$("lMsg");
     if(!t){m.textContent="Viết vài lời thương dành cho em nhé.";return}
-    if(!session){m.textContent="Bạn cần đăng nhập để gửi thư.";return}
+    if(n.length>40||t.length>600){m.textContent="Tên tối đa 40 ký tự và lời nhắn tối đa 600 ký tự nhé.";return}
     this.disabled=true;m.textContent="Đang gửi…";
     try{
-      var ins=await supabaseClient.from("letters").insert({author_name:n||profile?.display_name||"Người thân",message:t});
+      var ins=await supabaseClient.from("letters").insert({author_name:n||"Người thân",message:t});
       if(ins.error)throw ins.error;
-      $("lText").value="";m.textContent="Lời nhắn đã được gửi đến Bảo Khánh ♡";await loadLetters();
-    }catch(e){m.textContent="Chưa gửi được. Có thể tài khoản chưa được cấp quyền đóng góp."}
+      $("lName").value="";$("lText").value="";
+      m.textContent="Lời nhắn đã được gửi đến Bảo Khánh ♡";
+      await loadLetters();
+    }catch(e){
+      console.error("Gửi thư thất bại:",e);
+      m.textContent="Chưa gửi được. Gia đình hãy kiểm tra chính sách quyền gửi thư trong Supabase.";
+    }
     this.disabled=false;
   };
   async function loadMemories(){
@@ -423,9 +428,8 @@ dialog::backdrop{background:rgba(24,22,42,.55)}
     $("addBtn").textContent="+ Thêm kỷ niệm";
     $("avatarEdit").hidden=!canEdit;
     await loadAvatarUrl();
-    $("write").hidden=!canEdit;
-    $("lNote").hidden=canEdit;
-    if(session&&!canEdit){$("lNote").hidden=false;$("lNote").textContent="Tài khoản đã đăng nhập nhưng chưa được cấp quyền thành viên gia đình. Hãy kiểm tra hồ sơ trong bảng profiles.";}
+    $("write").hidden=false;
+    $("lNote").hidden=true;
     if(loginBtn)loginBtn.hidden=!session;
     if(signInBtn)signInBtn.hidden=!!session;
     await loadMemories();await loadLetters();
@@ -436,6 +440,8 @@ dialog::backdrop{background:rgba(24,22,42,.55)}
   signInBtn.onclick=function(){$("loginMsg").textContent="";$("login").showModal()};
   $("addBtn").parentNode.insertBefore(loginBtn,$("addBtn"));
   $("addBtn").parentNode.insertBefore(signInBtn,$("addBtn"));
+  $("write").hidden=false;
+  $("lNote").hidden=true;
   $("age").innerHTML='<span>Bảo Khánh · 13 tháng tuổi</span><span class="pill-divider" aria-hidden="true"></span><time class="pill-date" datetime="2025-11-09">09/11/2025</time>';
   render();
   refreshAuth().catch(function(){render();renderLetters()});
